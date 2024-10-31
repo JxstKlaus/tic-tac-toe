@@ -21,11 +21,12 @@ const GameController = (()=>{
 
     let rounds = 1, isOver = false, turn = playerX, winner= "";
 
-    const playRound = (fieldIndex, marker)=>{
-        GameBoard.setField(fieldIndex, marker);
+    const playRound = (fieldIndex)=>{
+        GameBoard.setField(fieldIndex, turn.marker);
         checkForResult();
         changeTurn();
         rounds++ ;
+        GameBoard.displayBoard()
     }
 
     const checkForResult = () =>{
@@ -48,6 +49,7 @@ const GameController = (()=>{
         if (isWin()){
             winner = turn.name;
             isOver = true
+            console.log(`${turn.name} Wins!!`)
         }
         else if (rounds == 9) {
             isOver = true;
@@ -68,6 +70,9 @@ const GameController = (()=>{
         winner = "";
     }
 
+    const getTurn = () => turn;
+    const getIsOver = () => isOver;
+
     //TEST
 
     //playRound(2, turn.marker);
@@ -79,12 +84,23 @@ const GameController = (()=>{
     //playRound(1, turn.marker);
     //GameBoard.displayBoard();
 
-    return {isOver, winner, playRound}
+    return {rounds, getTurn, getIsOver, winner, playRound}
 
 })();
 
 
-//todo
 const DisplayController = (()=>{
-    console.log(GameController.winner)
+    const fields = document.querySelectorAll(".field");
+    fields.forEach(field => field.addEventListener("click", () => updateBoard(field)))
+
+    const updateBoard = (fieldElement) =>{
+        if (!fieldElement.classList.contains("active")){
+            fieldElement.textContent = GameController.getTurn().marker;
+            setActive(fieldElement);
+            GameController.playRound(parseInt(fieldElement.id));
+        }
+        
+    }
+
+    const setActive = (e) => e.classList.add("active")
 })();
